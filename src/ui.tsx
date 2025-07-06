@@ -10,6 +10,13 @@ interface Variable {
   resolvedType: string;
   collectionId: string;
   collectionName?: string;
+  valueInfo?: {
+    type: 'color' | 'reference' | 'number' | 'string' | 'boolean';
+    value: any;
+    hex?: string;
+    referenceId?: string;
+    resolvedHex?: string;
+  };
 }
 
 function App() {
@@ -71,29 +78,17 @@ function App() {
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">
-          ローカル変数一覧
-          {isDebugMode && (
-            <span className="ml-2 text-sm font-normal text-orange-600">
-              (デバッグモード)
-            </span>
-          )}
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          変数の説明を直接編集できます。入力後、Enterキーまたはフォーカスを外すと自動保存されます。
-        </p>
-      </div>
-      
+    <div className="p-4">
       {variables.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
+        <div className="text-center py-12 text-muted-foreground text-xs">
           ローカル変数が見つかりません
         </div>
       ) : (
         <VariablesDataTable
           variables={variables}
           onUpdateDescription={handleUpdateDescription}
+          description="変数の説明を直接編集できます"
+          isDebugMode={isDebugMode}
         />
       )}
     </div>

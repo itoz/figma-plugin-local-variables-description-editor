@@ -30,9 +30,28 @@
 - UIサイズ: 幅240px × 高さ400px
 - code.jsの日本語コメントから日本語プロジェクトであることが分かる
 
+## 開発ルール
+
+### ビルド確認の徹底
+**重要**: ソースコードを変更した際は、必ず`npm run build`を実行してビルドが成功することを確認してください。TypeScriptの型エラーやwebpackのエラーを早期に発見し、常にビルド可能な状態を維持することが重要です。
+
+### コミット前のチェックリスト
+1. `npm run build` が成功すること
+2. TypeScriptの型エラーがないこと
+3. 必要に応じて `npm run lint` や `npm run typecheck` を実行（存在する場合）
+
+## 技術的な詳細
+
+- プロジェクトはwebpackとTypeScriptを使用
+- Reactベースのユーザーインターフェース
+- shadcn/uiコンポーネントライブラリを使用
+- Figmaプラグインは以下のファイルから構成：
+  - **code.ts**: Figmaのサンドボックス環境で実行されるメインプラグインコード
+  - **ui.tsx**: React製のプラグインUI
+  - **manifest.json**: プラグイン設定ファイル
+
 ## 重要な注意事項
 
-- 現在ビルドシステムやpackage.jsonは存在しない
 - Figmaプラグインを開発するには、Figmaに読み込む前にコードをビルド/バンドルする必要がある
 - プラグインはローカル変数にアクセス・変更するためのFigma APIコールを実装する必要がある
-- code.jsとui.html間の通信はpostMessage APIを使用する
+- code.tsとui.tsx間の通信はpostMessage APIを使用する

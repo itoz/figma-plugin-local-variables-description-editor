@@ -43,6 +43,11 @@ export function VariableValueCell({ valueInfo, resolvedType }: VariableValueCell
           <span className="text-xs text-gray-700">
             {valueInfo.value}
           </span>
+          {resolvedType === 'COLOR' && valueInfo.resolvedHex && (
+            <span className="text-xs font-mono text-gray-500">
+              {valueInfo.resolvedHex}
+            </span>
+          )}
         </div>
       );
     

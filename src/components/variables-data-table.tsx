@@ -40,11 +40,15 @@ interface Variable {
 interface VariablesDataTableProps {
   variables: Variable[];
   onUpdateDescription: (variableId: string, description: string) => void;
+  description?: string;
+  isDebugMode?: boolean;
 }
 
 export function VariablesDataTable({
   variables,
   onUpdateDescription,
+  description,
+  isDebugMode,
 }: VariablesDataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -152,8 +156,18 @@ export function VariablesDataTable({
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <p className="text-muted-foreground text-xs">
+            {description}
+          </p>
+          {isDebugMode && (
+            <span className="text-xs font-medium text-orange-600">
+              (デバッグモード)
+            </span>
+          )}
+        </div>
         <Input
           placeholder="変数名で検索..."
           value={(columnFilters.find(f => f.id === 'name')?.value as string) ?? ''}
@@ -165,7 +179,7 @@ export function VariablesDataTable({
                 : otherFilters;
             })
           }
-          className="max-w-sm"
+          className="max-w-[200px]"
         />
       </div>
       
