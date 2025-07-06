@@ -1,4 +1,7 @@
 // Figmaプラグインのメインコード
+// GitHubAPIをトップレベルでインポート
+import { GitHubAPI } from './utils/github-api';
+
 figma.showUI(__html__, {
   width: 900,  // 値カラムも含めて快適に表示するため幅を拡大
   height: 600,
@@ -225,11 +228,60 @@ async function loadLocalVariables() {
   }
 }
 
+// 設定をプラグインデータとして保存
+async function saveSettings(settings: any) {
+  await figma.clientStorage.setAsync('github-settings', settings);
+}
+
+// 設定を読み込む
+async function loadSettings() {
+  return await figma.clientStorage.getAsync('github-settings');
+}
+
 // UIからのメッセージを処理
 figma.ui.onmessage = async (msg) => {
   switch (msg.type) {
     case 'LOAD_VARIABLES':
       await loadLocalVariables();
+      break;
+      
+    case 'GET_SETTINGS':
+      const settings = await loadSettings();
+      figma.ui.postMessage({
+        type: 'SETTINGS_LOADED',
+        settings: settings || null
+      });
+      break;
+      
+    case 'SAVE_SETTINGS':
+      await saveSettings(msg.settings);
+      break;
+      
+    case 'SEND_TO_GITHUB':
+      try {
+        const settings = await loadSettings();
+        if (!settings) {
+          figma.ui.postMessage({
+            type: 'GITHUB_RESULT',
+            result: { success: false, message: 'GitHub設定が見つかりません。先に設定を行ってください。' }
+          });
+          return;
+        }
+        
+        // GitHubAPIクラスを使用
+        const githubAPI = new GitHubAPI(settings);
+        const result = await githubAPI.sendDesignTokens(msg.tokens, msg.options);
+        
+        figma.ui.postMessage({
+          type: 'GITHUB_RESULT',
+          result
+        });
+      } catch (error: any) {
+        figma.ui.postMessage({
+          type: 'GITHUB_RESULT',
+          result: { success: false, message: error.message || 'エラーが発生しました' }
+        });
+      }
       break;
       
     case 'UPDATE_DESCRIPTION':
