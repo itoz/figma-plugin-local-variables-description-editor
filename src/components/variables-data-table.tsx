@@ -20,6 +20,7 @@ import {
 import { Input } from './ui/input';
 import { ArrowUpDown } from 'lucide-react';
 import { EditableCell } from './editable-cell';
+import { VariableValueCell } from './variable-value-cell';
 
 interface Variable {
   id: string;
@@ -28,6 +29,13 @@ interface Variable {
   resolvedType: string;
   collectionId: string;
   collectionName?: string;
+  valueInfo?: {
+    type: 'color' | 'reference' | 'number' | 'string' | 'boolean';
+    value: any;
+    hex?: string;
+    referenceId?: string;
+    resolvedHex?: string;
+  };
 }
 
 interface VariablesDataTableProps {
@@ -75,6 +83,16 @@ export function VariablesDataTable({
       },
       cell: ({ row }) => (
         <div className="text-muted-foreground text-sm">{row.getValue('resolvedType')}</div>
+      ),
+    },
+    {
+      accessorKey: 'value',
+      header: '値',
+      cell: ({ row }) => (
+        <VariableValueCell 
+          valueInfo={row.original.valueInfo}
+          resolvedType={row.original.resolvedType}
+        />
       ),
     },
     {

@@ -14,7 +14,8 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(node:*)",
-      "Bash(afplay:*)"
+      "Bash(afplay:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }

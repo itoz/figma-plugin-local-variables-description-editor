@@ -9,9 +9,9 @@ console.log('🔔 Hook実行: 作業完了の通知');
 try {
   // macOSの場合、システム音を鳴らす
   if (os.platform() === 'darwin') {
-    // Ping音を鳴らす（他の音に変更可能: Basso, Blow, Bottle, Frog, Funk, Glass, Hero, Morse, Ping, Pop, Purr, Sosumi, Submarine, Tink）
-    execSync('afplay /System/Library/Sounds/Ping.aiff');
-    console.log('✅ 音を再生しました');
+    // Glass音を鳴らす（より聞こえやすい音）
+    execSync('afplay /System/Library/Sounds/Glass.aiff');
+    console.log('✅ 音を再生しました: Glass.aiff');
     
     // オプション: 音声で通知（コメントを外して使用）
     // execSync('say "作業が完了しました"');
