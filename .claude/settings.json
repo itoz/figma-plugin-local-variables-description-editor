@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "command": "afplay /System/Library/Sounds/Glass.aiff"
+      }
+    ],
+    "Notification": [
+      {
+        "matchers": {
+          "messagePatterns": [".*approval.*", ".*confirm.*", ".*proceed.*"]
+        },
+        "command": "afplay /System/Library/Sounds/Hero.aiff"
+      }
+    ]
+  }
+}
