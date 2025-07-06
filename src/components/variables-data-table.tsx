@@ -6,7 +6,6 @@ import {
   useReactTable,
   getSortedRowModel,
   SortingState,
-  getFilteredRowModel,
   ColumnFiltersState,
 } from '@tanstack/react-table';
 import {
@@ -50,7 +49,29 @@ export function VariablesDataTable({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const columns: ColumnDef<Variable>[] = useMemo(() => [
+  // 変数を名前順にソート
+  const tableData = useMemo(() => {
+    return [...variables].sort((a, b) => a.name.localeCompare(b.name));
+  }, [variables]);
+
+  const columns = useMemo(() => [
+    {
+      accessorKey: 'collectionName',
+      header: ({ column }) => {
+        return (
+          <button
+            className="flex items-center gap-1 hover:text-foreground"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            コレクション
+            <ArrowUpDown className="h-4 w-4" />
+          </button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="text-muted-foreground text-sm">{row.getValue('collectionName') || 'Unknown'}</div>
+      ),
+    },
     {
       accessorKey: 'name',
       header: ({ column }) => {
@@ -96,15 +117,6 @@ export function VariablesDataTable({
       ),
     },
     {
-      accessorKey: 'collectionName',
-      header: 'コレクション',
-      cell: ({ row }) => (
-        <div className="text-muted-foreground text-sm">
-          {row.getValue('collectionName') || '-'}
-        </div>
-      ),
-    },
-    {
       accessorKey: 'description',
       header: '説明',
       cell: ({ row }) => (
@@ -117,18 +129,26 @@ export function VariablesDataTable({
     },
   ], [onUpdateDescription]);
 
+  // フィルタリングされたテーブルデータを取得
+  const filteredTableData = useMemo(() => {
+    const filterValue = columnFilters.find(f => f.id === 'name')?.value as string || '';
+    if (!filterValue) return tableData;
+    
+    return tableData.filter((variable) => 
+      variable.name.toLowerCase().includes(filterValue.toLowerCase())
+    );
+  }, [tableData, columnFilters]);
+  
   const table = useReactTable({
-    data: variables,
+    data: filteredTableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
-      columnFilters,
     },
+    getRowId: (row) => row.id,
   });
 
   return (
@@ -136,9 +156,14 @@ export function VariablesDataTable({
       <div className="flex items-center gap-2">
         <Input
           placeholder="変数名で検索..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          value={(columnFilters.find(f => f.id === 'name')?.value as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
+            setColumnFilters(prev => {
+              const otherFilters = prev.filter(f => f.id !== 'name');
+              return event.target.value
+                ? [...otherFilters, { id: 'name', value: event.target.value }]
+                : otherFilters;
+            })
           }
           className="max-w-sm"
         />
