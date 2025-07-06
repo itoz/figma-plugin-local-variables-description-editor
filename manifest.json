@@ -1,0 +1,11 @@
+{
+  "name": "Local Variables Description Editor",
+  "id": "local-variables-description-editor-plugin",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "editorType": [
+    "figma",
+    "figjam"
+  ]
+}
