@@ -1,0 +1,5 @@
+{
+  "hooks": {
+    "post-command": ".claude/hooks/post-command.js"
+  }
+}
