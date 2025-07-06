@@ -56,7 +56,7 @@ export function EditableCell({ value, variableId, onUpdate }: EditableCellProps)
       onFocus={handleFocus}
       onKeyDown={handleKeyDown}
       placeholder="説明を入力..."
-      className="w-full max-w-none"
+      className="w-full max-w-none text-xs h-7 px-2 py-0.5"
       autoComplete="off"
       spellCheck={false}
     />

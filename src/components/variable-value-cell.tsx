@@ -14,7 +14,7 @@ interface VariableValueCellProps {
 
 export function VariableValueCell({ valueInfo, resolvedType }: VariableValueCellProps) {
   if (!valueInfo || !valueInfo.value) {
-    return <span className="text-muted-foreground text-sm">-</span>;
+    return <span className="text-muted-foreground text-xs">-</span>;
   }
 
   switch (valueInfo.type) {
@@ -22,25 +22,25 @@ export function VariableValueCell({ valueInfo, resolvedType }: VariableValueCell
       return (
         <div className="flex items-center gap-2">
           <div 
-            className="w-6 h-6 rounded border border-input"
+            className="w-4 h-4 rounded border border-input"
             style={{ backgroundColor: valueInfo.hex || '#000' }}
             title={valueInfo.hex}
           />
-          <span className="text-sm font-mono">{valueInfo.hex}</span>
+          <span className="text-xs font-mono">{valueInfo.hex}</span>
         </div>
       );
     
     case 'reference':
       return (
-        <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-[#fefefe] border border-gray-200">
+        <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[#fefefe] border border-gray-200">
           {resolvedType === 'COLOR' && valueInfo.resolvedHex && (
             <div 
-              className="w-4 h-4 rounded border border-input"
+              className="w-3 h-3 rounded border border-input"
               style={{ backgroundColor: valueInfo.resolvedHex }}
               title={valueInfo.resolvedHex}
             />
           )}
-          <span className="text-sm text-gray-700">
+          <span className="text-xs text-gray-700">
             {valueInfo.value}
           </span>
         </div>
@@ -48,14 +48,14 @@ export function VariableValueCell({ valueInfo, resolvedType }: VariableValueCell
     
     case 'number':
       return (
-        <span className="text-sm font-mono">
+        <span className="text-xs font-mono">
           {typeof valueInfo.value === 'number' ? valueInfo.value.toFixed(2).replace(/\.00$/, '') : valueInfo.value}
         </span>
       );
     
     case 'string':
       return (
-        <span className="text-sm truncate max-w-[200px]" title={valueInfo.value}>
+        <span className="text-xs truncate max-w-[150px]" title={valueInfo.value}>
           "{valueInfo.value}"
         </span>
       );
@@ -63,7 +63,7 @@ export function VariableValueCell({ valueInfo, resolvedType }: VariableValueCell
     case 'boolean':
       return (
         <span className={cn(
-          "text-sm font-medium",
+          "text-xs font-medium",
           valueInfo.value ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
         )}>
           {valueInfo.value ? 'true' : 'false'}
@@ -71,6 +71,6 @@ export function VariableValueCell({ valueInfo, resolvedType }: VariableValueCell
       );
     
     default:
-      return <span className="text-sm text-muted-foreground">-</span>;
+      return <span className="text-xs text-muted-foreground">-</span>;
   }
 }

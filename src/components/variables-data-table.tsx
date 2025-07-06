@@ -54,22 +54,22 @@ export function VariablesDataTable({
     return [...variables].sort((a, b) => a.name.localeCompare(b.name));
   }, [variables]);
 
-  const columns = useMemo(() => [
+  const columns: ColumnDef<Variable>[] = useMemo(() => [
     {
       accessorKey: 'collectionName',
       header: ({ column }) => {
         return (
           <button
-            className="flex items-center gap-1 hover:text-foreground"
+            className="flex items-center gap-1 hover:text-foreground text-xs"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
             コレクション
-            <ArrowUpDown className="h-4 w-4" />
+            <ArrowUpDown className="h-3 w-3" />
           </button>
         );
       },
       cell: ({ row }) => (
-        <div className="text-muted-foreground text-sm">{row.getValue('collectionName') || 'Unknown'}</div>
+        <div className="text-muted-foreground text-xs">{row.getValue('collectionName') || 'Unknown'}</div>
       ),
     },
     {
@@ -77,16 +77,16 @@ export function VariablesDataTable({
       header: ({ column }) => {
         return (
           <button
-            className="flex items-center gap-1 hover:text-foreground"
+            className="flex items-center gap-1 hover:text-foreground text-xs"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
             変数名
-            <ArrowUpDown className="h-4 w-4" />
+            <ArrowUpDown className="h-3 w-3" />
           </button>
         );
       },
       cell: ({ row }) => (
-        <div className="font-medium text-sm">{row.getValue('name')}</div>
+        <div className="font-medium text-xs">{row.getValue('name')}</div>
       ),
     },
     {
@@ -94,21 +94,21 @@ export function VariablesDataTable({
       header: ({ column }) => {
         return (
           <button
-            className="flex items-center gap-1 hover:text-foreground"
+            className="flex items-center gap-1 hover:text-foreground text-xs"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
             タイプ
-            <ArrowUpDown className="h-4 w-4" />
+            <ArrowUpDown className="h-3 w-3" />
           </button>
         );
       },
       cell: ({ row }) => (
-        <div className="text-muted-foreground text-sm">{row.getValue('resolvedType')}</div>
+        <div className="text-muted-foreground text-xs">{row.getValue('resolvedType')}</div>
       ),
     },
     {
       accessorKey: 'value',
-      header: '値',
+      header: () => <span className="text-xs">値</span>,
       cell: ({ row }) => (
         <VariableValueCell 
           valueInfo={row.original.valueInfo}
@@ -118,7 +118,7 @@ export function VariablesDataTable({
     },
     {
       accessorKey: 'description',
-      header: '説明',
+      header: () => <span className="text-xs">説明</span>,
       cell: ({ row }) => (
         <EditableCell
           value={row.original.description || ''}
