@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles.css';
+import { VariablesDataTable } from './components/variables-data-table';
 
 interface Variable {
   id: string;
@@ -14,8 +15,6 @@ interface Variable {
 function App() {
   const [variables, setVariables] = useState<Variable[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingValue, setEditingValue] = useState('');
   const [isDebugMode, setIsDebugMode] = useState(false);
 
   useEffect(() => {
@@ -31,9 +30,16 @@ function App() {
           setLoading(false);
           break;
         case 'UPDATE_SUCCESS':
-          setEditingId(null);
-          // 変数を再読み込み
-          parent.postMessage({ pluginMessage: { type: 'LOAD_VARIABLES' } }, '*');
+          // 更新成功時、該当する変数の値を更新
+          const updatedVariableId = msg.variableId;
+          if (updatedVariableId) {
+            setVariables(prev => prev.map(v => 
+              v.id === updatedVariableId 
+                ? { ...v, description: msg.description || v.description }
+                : v
+            ));
+          }
+          console.log('Description updated successfully');
           break;
         case 'ERROR':
           console.error(msg.message);
@@ -46,99 +52,49 @@ function App() {
     parent.postMessage({ pluginMessage: { type: 'LOAD_VARIABLES' } }, '*');
   }, []);
 
-  const handleEdit = (variable: Variable) => {
-    setEditingId(variable.id);
-    setEditingValue(variable.description || '');
-  };
-
-  const handleSave = (variableId: string) => {
+  const handleUpdateDescription = (variableId: string, description: string) => {
     parent.postMessage({
       pluginMessage: {
         type: 'UPDATE_DESCRIPTION',
         variableId,
-        description: editingValue,
+        description,
       }
     }, '*');
-  };
-
-  const handleCancel = () => {
-    setEditingId(null);
-    setEditingValue('');
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full min-h-[400px]">
-        <div className="text-gray-500">読み込み中...</div>
+        <div className="text-muted-foreground">読み込み中...</div>
       </div>
     );
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">
-        ローカル変数一覧
-        {isDebugMode && (
-          <span className="ml-2 text-sm font-normal text-orange-600">
-            (デバッグモード)
-          </span>
-        )}
-      </h1>
+    <div className="p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">
+          ローカル変数一覧
+          {isDebugMode && (
+            <span className="ml-2 text-sm font-normal text-orange-600">
+              (デバッグモード)
+            </span>
+          )}
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          変数の説明を直接編集できます。入力後、Enterキーまたはフォーカスを外すと自動保存されます。
+        </p>
+      </div>
       
       {variables.length === 0 ? (
-        <div className="text-gray-500">ローカル変数が見つかりません</div>
-      ) : (
-        <div className="space-y-2">
-          {variables.map((variable) => (
-            <div key={variable.id} className="border rounded p-3 bg-white shadow-sm">
-              <div className="font-medium text-sm">{variable.name}</div>
-              <div className="text-xs text-gray-500 mb-2">
-                タイプ: {variable.resolvedType}
-                {variable.collectionName && (
-                  <span className="ml-2">• コレクション: {variable.collectionName}</span>
-                )}
-              </div>
-              
-              {editingId === variable.id ? (
-                <div className="mt-2">
-                  <textarea
-                    className="w-full p-2 border rounded text-sm"
-                    value={editingValue}
-                    onChange={(e) => setEditingValue(e.target.value)}
-                    placeholder="説明を入力..."
-                    rows={3}
-                  />
-                  <div className="mt-2 flex gap-2">
-                    <button
-                      className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
-                      onClick={() => handleSave(variable.id)}
-                    >
-                      保存
-                    </button>
-                    <button
-                      className="px-3 py-1 bg-gray-300 text-gray-700 rounded text-sm hover:bg-gray-400"
-                      onClick={handleCancel}
-                    >
-                      キャンセル
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-2">
-                  <div className="text-sm text-gray-600">
-                    {variable.description || <span className="italic">説明なし</span>}
-                  </div>
-                  <button
-                    className="mt-2 px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300"
-                    onClick={() => handleEdit(variable)}
-                  >
-                    編集
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
+        <div className="text-center py-12 text-muted-foreground">
+          ローカル変数が見つかりません
         </div>
+      ) : (
+        <VariablesDataTable
+          variables={variables}
+          onUpdateDescription={handleUpdateDescription}
+        />
       )}
     </div>
   );

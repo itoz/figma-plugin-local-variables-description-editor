@@ -1,6 +1,6 @@
 // Figmaプラグインのメインコード
 figma.showUI(__html__, {
-  width: 400,
+  width: 800,  // Data Tableを快適に表示するため幅を拡大
   height: 600,
 });
 
@@ -111,6 +111,7 @@ figma.ui.onmessage = async (msg) => {
           figma.ui.postMessage({
             type: 'UPDATE_SUCCESS',
             variableId: msg.variableId,
+            description: msg.description,
           });
         }
       } catch (error) {
